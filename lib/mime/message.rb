@@ -37,7 +37,7 @@ module MIME
       if text.respond_to?(:split)
         lines = split_lines(text)
       else
-        lines = text
+        lines = normalize_lines(text)
       end
 
       headers, body = parse_headers_and_body(lines)
@@ -66,12 +66,16 @@ module MIME
       @body    = body
     end
 
-    # Given a MIME message contained in a single String, split it into an Array of lines and strip the CRLF.
+    # Given a MIME message contained in a single String, split it into an Array of lines and normalize the CRLF.
     #
     # @param [String] text an entire MIME message, as a single ASCII string
     # @return [Array] the lines of the message, as an Array of String
     def self.split_lines(text)
       text.split(FUZZY_CRLF).map { |l| "#{l}\r\n" }
+    end
+
+    def self.normalize_lines(lines)
+      lines.map { |l| l.gsub(FUZZY_CRLF, "\r\n") }
     end
 
     # Parse the headers and the body out of a message.
