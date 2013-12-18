@@ -1,7 +1,7 @@
-class MIME::Message
+module MIME::Message
   # A MIME multipart message. The body of a multipart message is an array of
   # Messages, each of which has its own headers and body.
-  class Multipart < MIME::Message
+  class Multipart < Simple
     # Any lines of ASCII text that appear before the first boundary are the preamble.
     # They're not technically part of the multipart message; they're merely there to
     # give non-MIME readers a clue as to what's happening.

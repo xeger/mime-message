@@ -1,4 +1,4 @@
-class MIME::Message
+module MIME::Message
   class StructuredField < String
     def parsed_value
       state  = :cdata

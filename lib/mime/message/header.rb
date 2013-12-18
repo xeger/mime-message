@@ -1,4 +1,4 @@
-class MIME::Message
+module MIME::Message
   # A MIME header. Headers have a name, a raw value, and occasionally they have
   # one or more parameters as semicolon-separated name=value pairs.
   #

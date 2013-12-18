@@ -1,4 +1,4 @@
-class MIME::Message
+module MIME::Message
   class Malformed < Exception
     attr_reader :line
 

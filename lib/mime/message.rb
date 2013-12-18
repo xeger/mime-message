@@ -2,7 +2,7 @@ module MIME
   # A MIME message, consisting of headers (stored as a Hash) and a body (array of lines in the
   # message).
   #
-  class Message
+  module Message
     # Matches any potential CR/LF-like sequence. This is more tolerant than RFC822, but useful in
     # cases where someone has run a message through a non-CRLF operating system.
     FUZZY_CRLF         = /\r\n|\n\r|\r|\n/
@@ -22,12 +22,6 @@ module MIME
     # MIME type prefix that signifies a multipart message.
     MULTIPART          = 'multipart/'
 
-    # @return [Array] the MIME headers associated with this message
-    attr_reader :headers
-
-    # @return [Array] an array of message lines (or body parts, for a multipart message)
-    attr_reader :body
-
     # Parse a MIME message from the given string.
     #
     # @param [String, Array] text raw ASCII text of the message, or array of message lines
@@ -44,27 +38,14 @@ module MIME
 
       content_type = headers.detect { |h| h.name == 'Content-Type' }
 
-      if content_type.nil? || !content_type.include?(MULTIPART)
-        self.new(headers, body)
-      else
+      if !content_type.nil? && content_type.include?(MULTIPART)
         Multipart.new(headers, body)
+      else
+        Simple.new(headers, body)
       end
     end
 
-    def to_s
-      headers.map(&:to_s).join('') + "\r\n" + body.map(&:to_s).join('')
-    end
-
-    private
-
-    # Create a new Message.
-    #
-    # @param [Array] headers a collection of Header objects
-    # @param [Array] body the lines of the message body
-    def initialize(headers, body)
-      @headers = headers
-      @body    = body
-    end
+    protected
 
     # Split a String into a collection of lines and normalize the line ending.
     #
@@ -139,4 +120,5 @@ end
 require 'mime/message/malformed_message'
 require 'mime/message/header'
 require 'mime/message/structured_field'
+require 'mime/message/simple'
 require 'mime/message/multipart'
