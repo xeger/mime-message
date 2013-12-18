@@ -16,7 +16,8 @@ class MIME::Message
       boundary     = content_type.parameters['boundary']
 
       if boundary.nil?
-        raise ArgumentError, "Malformed multipart message: expected Content-Type to contain 'boundary' parameter"
+        raise MalformedMessage.new("Malformed multipart message: expected Content-Type header to contain 'boundary' parameter",
+                                   1)
       else
         @boundary      = boundary.parsed_value
         boundary_tween = Regexp.new("--#{Regexp.escape(@boundary)}\s*[\r\n]*$")
