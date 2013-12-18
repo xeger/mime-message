@@ -7,6 +7,10 @@ class MIME::Message
     # give non-MIME readers a clue as to what's happening.
     attr_reader :boundary, :preamble, :postamble
 
+    # Create a new Multipart.
+    #
+    # @param [Array] headers a collection of Header objects
+    # @param [Array] body the lines of the multipart message body
     def initialize(headers, body)
       content_type = headers.detect { |h| h.name == 'Content-Type' }
       boundary     = content_type.parameters['boundary']

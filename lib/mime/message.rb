@@ -57,6 +57,10 @@ module MIME
 
     private
 
+    # Create a new Message.
+    #
+    # @param [Array] headers a collection of Header objects
+    # @param [Array] body the lines of the message body
     def initialize(headers, body)
       @headers = headers
       @body    = body
