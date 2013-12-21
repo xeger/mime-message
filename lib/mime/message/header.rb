@@ -28,7 +28,7 @@ module MIME::Message
     attr_reader :parameters
 
     def initialize(name, value)
-      @name, @value = canonical_name(name, true), StructuredField.new(value)
+      @name, @value = canonical_name(name, true), StructuredField.new(value.strip)
       @parameters = {}
 
       if @value.include?(';')

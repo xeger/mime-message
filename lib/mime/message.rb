@@ -103,7 +103,6 @@ module MIME
             end
             state = :body
           else
-            debugger
             raise MalformedMessage.new("Invalid MIME message: expecting a header", index+1)
           end
 

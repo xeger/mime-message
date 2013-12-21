@@ -5,7 +5,7 @@ module MIME::Message
     # Any lines of ASCII text that appear before the first boundary are the preamble.
     # They're not technically part of the multipart message; they're merely there to
     # give non-MIME readers a clue as to what's happening.
-    attr_reader :boundary, :preamble, :postamble
+    attr_reader :boundary, :preamble, :epilogue
 
     # Create a new Multipart.
     #
@@ -27,7 +27,7 @@ module MIME::Message
       parts      = []
       @preamble  = []
       part_lines = []
-      @postamble = []
+      @epilogue = []
       state      = :preamble
 
       body.each do |line|
@@ -50,13 +50,13 @@ module MIME::Message
             part_lines.pop if part_lines.last.empty? # get rid of extra newline if it was present
             parts << MIME::Message.parse(part_lines)
             part_lines = []
-            state = :postamble
+            state = :epilogue
           else
             part_lines << line
           end
 
-        when :postamble
-          @postamble << line
+        when :epilogue
+          @epilogue << line
         end
       end
 
@@ -64,7 +64,7 @@ module MIME::Message
     end
 
     def to_s
-      @headers.map(&:to_s).join('') + "\r\n" + preamble.join('') + "--#{boundary}\r\n" + body.map(&:to_s).join("\r\n--#{boundary}\r\n") + "\r\n--#{boundary}--\r\n" + postamble.join('')
+      @headers.map(&:to_s).join('') + "\r\n" + preamble.join('') + "--#{boundary}\r\n" + body.map(&:to_s).join("\r\n--#{boundary}\r\n") + "\r\n--#{boundary}--\r\n" + epilogue.join('')
     end
   end
 end
