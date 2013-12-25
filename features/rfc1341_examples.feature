@@ -83,15 +83,16 @@ Feature: RFC1341 examples
     Content-Type: image/gif
     Content-Transfer-Encoding: Base64
     """
+    When Tony wants to debug
     When I parse the text
     Then parsing succeeds
     And the message's preamble includes a line like "ignore this preamble"
     And the message has 3 parts
-    # @todo add some default header values in messages where none is provided
+    # @todo add some default header values, e.g. content type, in messages where none is provided
     #And the 1st part's Content-Type header is "text/plain"
     And the 1st part includes a line like "this is text"
-    And the 2nd part's Content-Type header is "text/plain; charset=US-ASCII"
+    And the 2nd part's Content-Type header is "text/plain" with parameters "charset=US-ASCII"
     And the 2nd part includes a line like "This could have been"
-    And the 3rd part's Content-Type header is "multipart/parallel"
+    And the 3rd part's Content-Type header is "multipart/parallel" with parameters "boundary=unique-boundary-2"
 
 

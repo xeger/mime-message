@@ -20,8 +20,8 @@ module MIME::Message
                                    1)
       else
         @boundary      = boundary.parsed_value
-        boundary_tween = Regexp.new("--#{Regexp.escape(@boundary)}\s*[\r\n]*$")
-        boundary_last  = Regexp.new("--#{Regexp.escape(@boundary)}--\s*[\r\n]*$")
+        boundary_tween = Regexp.new("--#{Regexp.escape(@boundary)}\s*\r\n$")
+        boundary_last  = Regexp.new("--#{Regexp.escape(@boundary)}--\s*\r\n$")
       end
 
       parts      = []
@@ -58,6 +58,11 @@ module MIME::Message
         when :epilogue
           @epilogue << line
         end
+      end
+
+      # Handle messages that have no epilogue
+      unless part_lines.empty?
+        parts << MIME::Message.parse(part_lines)
       end
 
       super(headers, parts)

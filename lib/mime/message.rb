@@ -28,10 +28,10 @@ module MIME
     # @return [Message] a Ruby object representation of the message
     # @raise [ArgumentError] if the message is malformed
     def self.parse(text)
-      if text.respond_to?(:split)
+      if text.respond_to?(:split) # then it's a String!
         lines = split_lines(text)
       else
-        lines = normalize_lines(text)
+        lines = text
       end
 
       headers, body = parse_headers_and_body(lines)
