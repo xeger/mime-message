@@ -43,12 +43,12 @@ module MIME::Message
           if line =~ boundary_tween
             part_lines.last.gsub!(/[\r\n]+$/, '') # swallow CRLF before boundary marker
             part_lines.pop if part_lines.last.empty? # get rid of extra newline if it was present
-            parts << MIME::Message.parse(part_lines)
+            parts << MIME::Message.parse(part_lines, false)
             part_lines = []
           elsif line =~ boundary_last
             part_lines.last.gsub!(/[\r\n]+$/, '') # swallow CRLF before boundary marker
             part_lines.pop if part_lines.last.empty? # get rid of extra newline if it was present
-            parts << MIME::Message.parse(part_lines)
+            parts << MIME::Message.parse(part_lines, false)
             part_lines = []
             state = :epilogue
           else
@@ -62,7 +62,7 @@ module MIME::Message
 
       # Handle messages that have no epilogue
       unless part_lines.empty?
-        parts << MIME::Message.parse(part_lines)
+        parts << MIME::Message.parse(part_lines, false)
       end
 
       super(headers, parts)

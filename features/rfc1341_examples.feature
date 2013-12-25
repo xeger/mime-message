@@ -83,7 +83,6 @@ Feature: RFC1341 examples
     Content-Type: image/gif
     Content-Transfer-Encoding: Base64
     """
-    When Tony wants to debug
     When I parse the text
     Then parsing succeeds
     And the message's preamble includes a line like "ignore this preamble"

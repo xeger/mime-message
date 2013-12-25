@@ -22,17 +22,26 @@ module MIME
     # MIME type prefix that signifies a multipart message.
     MULTIPART          = 'multipart/'
 
-    # Parse a MIME message from the given string.
+    # Parse a MIME message from the given string. You can also pass an Array of strings, where each
+    # string represents one line of the message.
+    #
+    # The option not to normalize is intended mainly for internal usage, when .parse is being called reentranly as
+    # part of parsing a multipart message. In this case, the outermost call to .parse normalizes the line endings and
+    # some lines have their CRLF stripped due to special treatment of empty lines that occur before boundary markers.
+    # It is important NOT to renormalize the lines in order to preserve the exact content of each message part.
     #
     # @param [String, Array] text raw ASCII text of the message, or array of message lines
+    # @param [Boolean] normalize if true, normalize all lines so they end in CRLF
     # @return [Message] a Ruby object representation of the message
     # @raise [ArgumentError] if the message is malformed
-    def self.parse(text)
+    def self.parse(text, normalize=true)
       if text.respond_to?(:split) # then it's a String!
         lines = split_lines(text)
       else
         lines = text
       end
+
+      lines = normalize_lines(lines) if normalize
 
       headers, body = parse_headers_and_body(lines)
 
@@ -47,17 +56,18 @@ module MIME
 
     protected
 
-    # Split a String into a collection of lines and normalize the line ending.
+    # Split a String into a collection of lines with no line endings.
     #
     # @param [String] text an entire MIME message, as a single ASCII string
     # @return [Array] the lines of the message, as an Array of String
     def self.split_lines(text)
-      normalize_lines(text.split(FUZZY_CRLF))
+      text.split(FUZZY_CRLF)
     end
 
-    # Normalize the line ending on a collection of lines.
+    # Normalize the line ending on a collection of lines, ensuring that they all end with a proper MIME CRLF.
     #
-    # @param [Array] lines a cllection of lines
+    # @param [Array] lines a collection of lines
+    # @return [Array] a copy of the input with every line determined by CRLF
     def self.normalize_lines(lines)
       lines.map { |l| l.chomp << "\r\n" }
     end
