@@ -1,3 +1,3 @@
-When /Tony wants to debug/ do
-  $tony = true
+Given /I want to debug/ do
+  $debug = true
 end
