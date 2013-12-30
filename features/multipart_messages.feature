@@ -1,9 +1,9 @@
-Feature: RFC1341 examples
-  In order to ensure interoperability
-  We can parse all of the examples given in RFC1341
-  So we know we implemented according to the spec
+Feature: multipart messgaes
+  As a Ruby developer
+  I can parse multipart messages as defined in RFC1341
+  In order to send and receive email attachments and other interesting messages
 
-  Scenario: common syntax (section 7.2)
+  Scenario: common syntax (RFC1341, section 7.2)
     Given a MIME text:
     """
     From: Nathaniel Borenstein <nsb@bellcore.com>
@@ -31,13 +31,14 @@ Feature: RFC1341 examples
     """
     When I parse the text
     Then parsing succeeds
+    And the message's content_type is "multipart/mixed"
     And the message's preamble includes a line like "This is the preamble."
     And the message has 2 parts
     And the 1st part doesn't end with a linebreak
     And the 2nd part ends with a linebreak
     And the message's epilogue includes a line like "This is the epilogue."
 
-  Scenario: complex example (appendix C)
+  Scenario: complex example (RFC1341, appendix C)
     Given a MIME text:
     """
     MIME-Version: 1.0
@@ -85,6 +86,7 @@ Feature: RFC1341 examples
     """
     When I parse the text
     Then parsing succeeds
+    And the message's content_type is "multipart/mixed"
     And the message's preamble includes a line like "ignore this preamble"
     And the message has 3 parts
     # @todo add some default header values, e.g. content type, in messages where none is provided
