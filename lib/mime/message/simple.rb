@@ -3,6 +3,10 @@ module MIME::Message
     # @return [Array] the MIME headers associated with this message
     attr_reader :headers
 
+    # Retrieve the raw message body. For a Simple message this will be an Array of Strings that have US-ASCII
+    # encoding; for a Multipart message, this will be an Array of MIME::Messages that together comprise the multipart
+    # message.
+    #
     # @return [Array] an array of message lines (or body parts, for a multipart message)
     attr_reader :body
 

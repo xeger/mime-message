@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Runtime dependencies
-gem "mime-types", "~> 2.0"
+gem "mime-types", "~> 1.0"
 
 # Gems used during test and development
 group :development do
