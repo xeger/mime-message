@@ -16,7 +16,7 @@ module MIME::Message
       boundary     = content_type.parameters['boundary']
 
       if boundary.nil?
-        raise MalformedMessage.new("Malformed multipart message: expected Content-Type header to contain 'boundary' parameter",
+        raise Malformed.new("Expected multipart Content-Type header to contain 'boundary' parameter",
                                    1)
       else
         @boundary      = boundary.parsed_value

@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "lib/mime/message.rb",
     "lib/mime/message/header.rb",
-    "lib/mime/message/malformed_message.rb",
+    "lib/mime/message/malformed.rb",
     "lib/mime/message/multipart.rb",
     "lib/mime/message/simple.rb",
     "lib/mime/message/structured_field.rb"

@@ -64,12 +64,38 @@ module MIME
       text.split(FUZZY_CRLF)
     end
 
-    # Normalize the line ending on a collection of lines, ensuring that they all end with a proper MIME CRLF.
+    # Normalize the character encoding and line ending on a collection of lines, ensuring that they are 7-bit ASCII and
+    # end with a CRLF.
     #
     # @param [Array] lines a collection of lines
     # @return [Array] a copy of the input with every line determined by CRLF
     def self.normalize_lines(lines)
-      lines.map { |l| l.chomp << "\r\n" }
+      result = []
+
+      if defined?(Encoding)
+          # Ruby 1.9 and above - ensure that everything is encoded as US-ASCII
+          lines.each_with_index do |l, i|
+            begin
+              o = l.encode(Encoding::US_ASCII)
+              o.chomp!
+              o << RFC822_CRLF
+              result << o
+            rescue Encoding::InvalidByteSequenceError
+              raise Malformed.new("Invalid byte sequence for US-ASCII; input is not 7-bit clean", i+1)
+            rescue Encoding::UndefinedConversionError
+              raise Malformed.new("Undefined conversion for US-ASCII; input is not 7-bit clean", i+1)
+            end
+          end
+      else
+        # Ruby 1.8 - remain ignorant of character encodings
+        lines.each_with_index do |l, i|
+          o = l.chomp
+          o << RFC822_CRLF
+          result << o
+        end
+      end
+
+      result
     end
 
     # Parse the headers and the body out of a message.
@@ -102,7 +128,7 @@ module MIME
             value = line.split(':', 2)[1]
           elsif line[0, 1] =~ RFC822_LWSP # continuation of a folded header
             if name.empty? # we're not in the middle of a header!
-              raise MalformedMessage.new("Invalid MIME message: unexpected initial whitespace in headers section", index+1)
+              raise Malformed.new("Unexpected initial whitespace in headers section", index+1)
             else
               value.gsub!(/\r\n$/, '') # RFC822 says to ditch the CRLFs when "unfolding" a multi-line header
               value << line
@@ -116,7 +142,7 @@ module MIME
             end
             state = :body
           else
-            raise MalformedMessage.new("Invalid MIME message: expecting a header", index+1)
+            raise Malformed.new("Expected a header", index+1)
           end
 
         when :body
@@ -129,7 +155,7 @@ module MIME
   end
 end
 
-require 'mime/message/malformed_message'
+require 'mime/message/malformed'
 require 'mime/message/header'
 require 'mime/message/structured_field'
 require 'mime/message/simple'

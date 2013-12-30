@@ -98,8 +98,8 @@ Then /^the ([0-9]+)(st|nd|rd|th) part (ends|doesn't end) with a linebreak$/ do |
   part = @message.body[ordinal]
 
   if expect_crlf
-    part.body.last.should end_with("\r\n")
+    part.body.last.should end_with(MIME::Message::RFC822_CRLF)
   else
-    part.body.last.should_not end_with("\r\n")
+    part.body.last.should_not end_with(MIME::Message::RFC822_CRLF)
   end
 end
