@@ -12,7 +12,7 @@ module MIME::Message
     # @param [Array] headers a collection of Header objects
     # @param [Array] body the lines of the multipart message body
     def initialize(headers, body)
-      content_type = headers.detect { |h| h.name == 'Content-Type' }
+      content_type = headers['Content-Type']
       boundary     = content_type.parameters['boundary']
 
       if boundary.nil?
@@ -68,8 +68,31 @@ module MIME::Message
       super(headers, parts)
     end
 
+    # @return [String] the string representation of this entire message, including headers, CRLFs, preamble, postamble and all boundaries
     def to_s
-      @headers.map(&:to_s).join('') + "\r\n" + preamble.join('') + "--#{boundary}\r\n" + body.map(&:to_s).join("\r\n--#{boundary}\r\n") + "\r\n--#{boundary}--\r\n" + epilogue.join('')
+      result = ''
+
+      @headers.each_pair do |_, v|
+        result << v.to_s
+      end
+      result << "\r\n"
+
+      preamble.each do |l|
+        result << l
+      end
+
+      result << "--#{boundary}\r\n"
+      body.each do |l|
+        result << l
+        result << "\r\n--#{boundary}\r\n"
+      end
+      result << "\r\n--#{boundary}--\r\n"
+
+      epilogue.each do |l|
+        result << l
+      end
+
+      result
     end
   end
 end

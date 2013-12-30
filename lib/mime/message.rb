@@ -45,7 +45,7 @@ module MIME
 
       headers, body = parse_headers_and_body(lines)
 
-      content_type = headers.detect { |h| h.name == 'Content-Type' }
+      content_type = headers['Content-Type']
 
       if !content_type.nil? && content_type.include?(MULTIPART)
         Multipart.new(headers, body)
@@ -77,7 +77,7 @@ module MIME
     # @param [Array] lines the lines of a MIME message, as an Array of String
     # @return [Hash, Array] the message headers as a Hash of name to value, and the body as an Array of lines
     def self.parse_headers_and_body(lines)
-      headers = []
+      headers = {}
       body    = []
 
       # Simple state machine; see case statement below
@@ -94,7 +94,9 @@ module MIME
           if match = RFC822_HEADER_NAME.match(line)
             # beginning of a new header
             unless name.nil?
-              headers << Header.new(name, value) # save last header if there was one
+              # save previous header if there was one
+              h = Header.new(name, value)
+              headers[h.name] = h
             end
             name  = match[1]
             value = line.split(':', 2)[1]
@@ -108,8 +110,9 @@ module MIME
           elsif line == RFC822_CRLF
             # end of headers
             unless name.nil?
-              # save last header if there was one
-              headers << Header.new(name, value)
+              # save previous header if there was one
+              h = Header.new(name, value)
+              headers[h.name] = h
             end
             state = :body
           else

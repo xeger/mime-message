@@ -47,6 +47,7 @@ module MIME::Message
       end
     end
 
+    # @return [String] the string representation of this header's name and value
     def to_s
       "%s: %s\r\n" % [name, value.strip]
     end

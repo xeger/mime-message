@@ -61,7 +61,7 @@ Then /^the ([0-9]+)(st|nd|rd|th) part's ([A-Za-z0-9-]+) header is "([^"]*)"$/ do
   header.value.should == value
 end
 
-Then /^the ([0-9]+)(st|nd|rd|th) part's ([A-Za-z0-9-]+) header is "([^"]*)" with parameters "([^"]*)"$/ do |ordinal, _, header, value, params|
+Then /^the ([0-9]+)(st|nd|rd|th) part's ([A-Za-z0-9-]+) header is "([^"]*)" with parameters "([^"]*)"$/ do |ordinal, _, name, value, params|
   ordinal = Integer(ordinal) - 1
   params = params.split(';').inject({}) { |h, e| k, v = e.split('=') ; h[k] = v ; h }
 
@@ -69,7 +69,7 @@ Then /^the ([0-9]+)(st|nd|rd|th) part's ([A-Za-z0-9-]+) header is "([^"]*)" with
   @message.body.size.should >= ordinal
   part = @message.body[ordinal]
 
-  header = part.headers.detect { |h| h.name == header }
+  header = part.headers[name]
   header.should_not be_nil
   header.value_without_parameters.should == value
 
