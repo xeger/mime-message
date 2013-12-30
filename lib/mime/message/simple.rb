@@ -1,3 +1,5 @@
+require 'mime-types'
+
 module MIME::Message
   class Simple
     # This message's headers. Header names are always stored and accessed using canonicalized names a la HTTP; for
@@ -6,9 +8,8 @@ module MIME::Message
     # @return [Hash] a hash of MIME headers associated with this message
     attr_reader :headers
 
-    # Retrieve the raw message body. For a Simple message this will be an Array of Strings that have US-ASCII
-    # encoding; for a Multipart message, this will be an Array of MIME::Messages that together comprise the multipart
-    # message.
+    # Retrieve the raw message body. For a Simple message this will be an Array of Strings with US-ASCII encoding; for
+    # a Multipart message, this will be an Array of MIME::Message objects.
     #
     # @return [Array] an array of message lines (or body parts, for a multipart message)
     attr_reader :body
@@ -27,6 +28,19 @@ module MIME::Message
       end
 
       result
+    end
+
+    # Determine the MIME type of this message's content.
+    #
+    # @return [MIME::Type] the declared content type, or text/plain if no Content-Type header is present
+    def content_type
+      if headers.key?('Content-Type')
+        typename = headers['Content-Type'].value_without_parameters
+      else
+        typename = 'text/plain'
+      end
+
+      MIME::Types[typename].first
     end
 
     private
